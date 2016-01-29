@@ -231,11 +231,19 @@ kclient.controller('mainCtrl', function($scope) {
 
                     var candObject = JSON.parse(json['candidate']);
 
-                    $scope.vars.sendPeer.addIceCandidate(candObject, function (error) {
-                        if(error) {
-                            return console.error('Не удалось добавить ICE сервер: ' + error);
-                        }
-                    });
+                    if(json['name'] === $scope.vars.loginName) {
+                        $scope.vars.sendPeer.addIceCandidate(candObject, function (error) {
+                            if(error) {
+                                return console.error('Не удалось добавить ICE сервер: ' + error);
+                            }
+                        });
+                    } else {
+                        $scope.vars.peersMap[json['name']].addIceCandidate(candObject, function (error) {
+                            if(error) {
+                                return console.error('Не удалось добавить ICE сервер (для пользователя): ' + error);
+                            }
+                        });
+                    }
                 } break;
             case $scope.serverMsgTypes.EXISTS_LIST: {
                     console.log('Сообщение: ' + JSON.stringify(json))
