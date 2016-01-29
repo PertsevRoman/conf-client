@@ -102,9 +102,9 @@ kclient.directive('peerViewer', function ($templateCache) {
 
             $scope.peer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, peerCreated);
 
-            $scope.peersMap[userName] = $scope.peer;
+            $scope.vars.peersMap[userName] = $scope.peer;
 
-            console.log('Пиры: ' + JSON.stringify($scope.peersMap));
+            console.log('Пиры: ' + JSON.stringify($scope.vars.peersMap));
         }
     };
 });

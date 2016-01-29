@@ -7,14 +7,12 @@ kclient.controller('mainCtrl', function($scope) {
     $scope.vars = {
         socket: new WebSocket('wss://' + location.host + ':8025'),
         logged: false,
-        sendPeer: null
+        sendPeer: null,
+        peersMap: {}
     };
 
     // Подключенные участники
     $scope.connectedPeers = [];
-
-    // Словарь пиров
-    $scope.peersMap = {};
 
     // Типы отправляемых сообщений
     $scope.clientMsgTypes = {
@@ -207,7 +205,7 @@ kclient.controller('mainCtrl', function($scope) {
                     console.log('Ошибка сервера');
                 } break;
             case $scope.serverMsgTypes.OFFER_ANSWER: {
-                    console.log('Основные пиры: ' + JSON.stringify($scope.peersMap));
+                    console.log('Основные пиры: ' + JSON.stringify($scope.vars.peersMap));
 
                     if(json['name'] === $scope.vars.loginName) {
                         console.log('Ответ текущему пользователю' + json['name']);
@@ -219,7 +217,7 @@ kclient.controller('mainCtrl', function($scope) {
                     } else {
                         console.log('Ответ передающему пользователю: ' + json['name']);
 
-                        $scope.peersMap[json['name']].processAnswer(json['answer'], function(error) {
+                        $scope.vars.peersMap[json['name']].processAnswer(json['answer'], function(error) {
                             if(error) {
                                 console.error(error);
                             }
@@ -246,9 +244,9 @@ kclient.controller('mainCtrl', function($scope) {
                     }
                 } break;
             case $scope.serverMsgTypes.EXISTS_LIST: {
-                    console.log('Сообщение: ' + JSON.stringify(json))
+                    console.log('Существующие: ' + JSON.stringify(json))
 
-                    angular.forEach(json['names'], function (name, index) {
+                    angular.forEach(json['names'], function (name) {
                         var existUser = {};
                         existUser['name'] = name;
                         existUser['width'] = 320;
@@ -264,7 +262,7 @@ kclient.controller('mainCtrl', function($scope) {
                     console.log('Удаление пользователя: ' + json['name']);
 
                     // Освобождение пира
-                    $scope.peersMap[json['name']].dispose();
+                    $scope.vars.peersMap[json['name']].dispose();
 
                     // Удаление узла
                     $scope.connectedPeers = $scope.connectedPeers.filter(function (elem) {
